@@ -28,6 +28,7 @@ function setFilterOptions(view) {
     view.$('.filter-hours .btn[data-value="open"]').button('toggle');
   }
 
+  var up = 38, left = 37, right = 39, down = 40, tab = 9, space = 32;
   view.$('div[role=radiogroup]').click(function(event) {
     if ($(event.target).attr("role") != 'radio') { return; }
     var radiogroup = $(this),
@@ -35,7 +36,51 @@ function setFilterOptions(view) {
 
     $(oldOpt).attr('aria-checked', false);
     $(event.target).attr('aria-checked', true);
+  }).keydown(function(event) {
+    var target = $(event.target);
+    if (event.which == up || event.which == left) {
+      console.log('up or left', event.controlKey);
+      // debugger;
+      // Up Arrow and Left Arrow moves focus to the previous radio button in the group, and selects that button.
+      // If focus is on the first item, then focus wraps to last item.
+      // Control+Arrow moves through the options without updating content or selecting the button.
+      var firstItem = $(this).find(':first-child[role=radio]')[0] === target;
+      var toSelect = firstItem ? $(this).find(':last-child[role=radio]')[0] : target.prev();
+      if (!event.controlKey) { toSelect.button('toggle'); }
+      toSelect.focus();
+    } else if (event.which == down || event.which == right) {
+      if (!event.controlKey) { target.next().button('toggle'); }
+      target.next().focus();
+    } else if (event.which == tab) {
+      console.log('tab', event.shiftKey);
+    } else if (event.which == space) {
+      console.log('space');
+    }
+    console.log('keydown', event.which, event.shiftKey, event.controlKey);
+  // }).focusin(function(event) {
+  //   // When Tab or Shift+Tab into a radio group, focus goes to the selected radio button
+  //   // debugger;
+  //   var selected = $(this).find('[role=radio][aria-checked=true]')[0];
+  //   if (selected) {
+  //     console.log('focus in selected');
+  //     event.preventDefault();
+  //     selected.focus();
+  //   }
+  //   console.log('focusIn', event, event.target, event.which);
   });
+  // }).focus(function(event) {
+  //   console.log('focus', event, event.target, event.which);
+  // });
+
+  // TODO: last!
+  // $(document.body).keyup(function(event) {
+  //   if (event.which == tab) {
+  //     var focused = $(':focus');
+  //     if ($(event.target).attr('role') === 'radio' || focused.attr('role') === 'radio') {
+  //       console.log('body tab', event.shiftKey, event.originalEvent.srcElement, focused);
+  //     }
+  //   }
+  // });
 
   view.$('button[role=checkbox]').click(function() {
     var button = $(this);
